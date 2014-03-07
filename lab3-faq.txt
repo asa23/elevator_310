@@ -1,0 +1,179 @@
+You can unpack the source file archive (lab3.jar) with "jar xvf lab3.jar".
+
+You may modify the source code if you wish.  Make sure you submit all the relevant files with a README so that we can compile and execute.
+
+The README instructions asks for an executable jar file for submission *including the source files* and *including all test cases*. The actual naming of the files is probably not that important as long as you provide a reasonable way to test the submission and also document them in the README.
+
+--------------------------------------------------------------------------------
+What about the README.OUTPUTFORMAT?
+
+You are not required to follow the formats in the README.OUTPUTFORMAT: as always, the lab handout is the full specification for the lab.  But we would like you to use them.  They make it possible to use automated tools to assist with grading.  
+
+Some students have found the input formats confusing.  There is a single input file, and each line represents the movement of one rider from one floor to another floor.   The intent is that each rider corresponds to a single thread.  All rider threads read the same input file and process the lines that pertain to them, in the order in which they appear in the file.  A rider thread ignores any input lines for other riders.
+
+In using those formats, you may assume that the input cases always set the number of rider threads equal to the number of riders.  You do not need to print out an ID for the rider thread.  (It is a bit ambiguous on this point.)
+
+Also, for the parts of the lab that restrict the input, please use the same input format with values that conform to the restriction.  (E.g., number of elevators == 1).
+
+--------------------------------------------------------------------------------
+How do I make my jar file to turn in?
+
+It is easy to create an executable jar file ("java archive"). To create an executable jar from command line, see this: http://introcs.cs.princeton.edu/java/85application/jar/jar.html
+
+For example, to create an executable jar from a folder containing a single "main":
+
+jar -cvf lab3.jar <give the name of the folder/directory here>
+
+Creating the executable jar from Eclipse is also straight-forward:
+
+1. Right click on the project which you need to export as jar
+2. Select the option 'Export' from the list
+3. From the new pop up, select 'Runnable jar file'
+4. Click 'next' button
+5. In the next window give a name for your jar and the launch configuration (the class with main method)
+6. Select the appropriate option for the required libraries, source files, and click finish button
+
+You should be able to run the jar through the terminal by using "java -jar <name of jar>" followed by your arguments.
+E.g.,
+
+java -jar lab3.jar
+
+You can also add arguments to the command line.  
+
+If running under Eclipse, you can put in arguments by going to Project->Properties->Run/Debug settings, then picking a launch configuration, and going to edit->Arguments.  For eclipse, the other way is right click on the file and select "Run as->Run configurations->Arguments".
+
+--------------------------------------------------------------------------------
+Do we have to supply a test program?
+
+You will have to supply a test program.  Ideally there will be one test program for all parts of the lab, with a single main.  Use command line arguments to distinguish the cases in your test program.
+
+Since there are three parts with three different test cases, and Java executable picks up a only main(), you can make your main() to accept command line options based on which it invokes the right class file. For example, you can do the following:
+
+public static void main(String[] args)
+{
+    if(args.length == 0) {
+        // No options specified; make the default as the part 3 elevator submission
+    } else if(args.length > 2) {
+        // Throw an error--too many args
+    } else // known just one arg
+       if(args[1].equals("p1"){
+          // call the EventBarrier"
+       }
+       if(args[1].equals("p2part1") {
+           // call the elevator part1
+       } else if(args[1].equals("p2part2") {
+           // call the elevator part2
+       } else if(args[1].equals("p2part3") {
+           // call the elevator part3
+      ...
+   }
+}
+
+Note that argument handling is a bit different in Java than in C.   The first argument you pass appears in argv[0], and your program does not receive the program name as an argument in argv[0].
+See http://docs.oracle.com/javase/tutorial/essential/environment/cmdLineArgs.html
+
+------------------------------------------------------------------------
+Grading?
+
+Grading criteria for this lab is as follows:
+
+Problem 1: EventBarrier: 25 points
+
+Problem 2: Elevator: 60 points (total)
+Part I: Single elevator: 30 points
+Part II: Capacity constraint: 10 points
+Part III: Multiple elevators: 20 points
+
+Output (Elevator.log) and README: 15 points
+
+Extra-credit: Up to 25 points
+
+------------------------------------------------------------------------
+More FAQ :
+------------------------------------------------------------------------
+
+(1) You talked in class about the Java syntax for threads and concurrency.  But I'm lost.  Help.
+
+The syntax is very simple. The class slides give examples of all of it. For reference it is always best to go to the authoritative source. E.g., for Java 7:
+
+http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html
+That will tell you about wait() and notify() and variants.
+
+Other than that it is just the synchronized keyword. There is a full tutorial that discusses that in some detail:
+http://docs.oracle.com/javase/tutorial/essential/concurrency/index.html
+
+The following text might also help.  It was written in response to a garbled question about concurrency in Java:
+
+A condition variable is exactly an *object* (not a class) that supports the wait() and notify() primitives as defined.
+
+In Java, through the magic of class hierarchy, every object supports the wait and notify primitives. Therefore every Java object is a condition variable. 
+
+A mutex is exactly an object with acquire/lock and release/unlock primitives as defined. In Java, "synchronized block" is merely syntactic sugar for lock/unlock. In Java, every object supports the "synchronized" construct. Therefore every Java object is a mutex.
+
+The Java magic either makes things more or less confusing, depending on what you bring to it. But it is not complicated.
+
+Now, a condition variable is often/typically associated with some condition or conditions. A condition is a predicate over the program data, i.e., a function of the data whose value is either true or false. E.g., the condition in your loop-before-you-leap while statement. But a "condition" is not the same thing as a "condition variable". They are friends, and are often seen together, but they are not the same animal.
+
+------------------------------------------------------------------------
+
+(2) Can I cause threads to block using "sleep" as part of my synchronization scheme?
+
+No.  The correct way to wait for a condition to become true is to wait() on a condition variable. 
+
+In general, sleep() is only appropriate when there is a particular real-world moment in time when you want to perform some action. If you catch yourself writing
+while(some condition){
+      sleep();
+} treat this is a big red ﬂag that you are probably making a mistake. However, while testing your multi-threaded code, sometimes sleep() is useful and okay to use.
+
+
+------------------------------------------------------------------------
+
+(3) Help me with testing.
+
+There is no straight-forward way to test the correctness of a concurrent program.
+
+However, one can simulate the actual scenarios using some sort of log/sleep() cycles in most cases (Note: the sleep() should only be used for testing but not for actual synchronization). 
+
+Say you have n consumers with some local variable set to "phase1". On complete(), each consumer increments their count. For example, the second iteration their local variable will be set to "phase2". But the barrier does not return until all the consumers arrived. So if you have print() statement after the barrier, you should see all the consumers printing "phase2". If some consumer prints "phase1" that means that complete() did not happen but still passed through the barrier. Hence, indicative of a bug.
+
+------------------------------------------------------------------------
+
+(4) What are these "events" in EventBarrier?  What threads generate these events?
+
+The "event" referred to in the EventBarrier spec is a call to the raise() API by a "producer" thread (also called a "controller" since it controls the barrier). The program that uses EventBarrier decides when an event is to occur, i.e., when a thread should call raise(). For example, you may find that EventBarrier is useful in your Elevator. An elevator might raise() an event when it arrives at a floor and opens it doors. Once the riders are on board the elevator can close the doors and depart. EventBarrier may be useful to synchronize the elevator and riders. (Note: you are not required to use it, and/or you may choose to modify it.) In that case the producer thread decides when to raise an event, but its choice is not arbitrary.
+
+An EventBarrier should be a "passive" object: an ordinary class, with an API. It should not create any threads. The API for an EventBarrier is or can be or will be called by multiple threads, and its function is to synchronize those threads.  In particular, the producer should not return from raise() until all the threads that have actually called arrive() have also called complete().
+
+You may assume there is a single "producer" thread.  Your implementation should do something reasonable if a second producer calls raise() while the gate is raised. Either block the producer or return immediately. But we will not test this case.
+
+------------------------------------------------------------------------
+
+(5) In EventBarrier, what are these consumer threads, or minstrels, or whatever?
+
+The minstrels call arrive() and wait in arrive() until the elevator doors open or the gate is up or whatever. Once the gate is open they respond to the event by doing whatever it is they do, like crossing the bridge and going through the gate, and then they inform the controller/producer/gatekeeper/elevator that they are done doing what they do, by calling complete(). At no time does any minstrel call arrive(). At no time does raise() occur as a result of an arrive().
+
+(6) What's a real world example corresponding to this situation in the EventBarrier:  A batch of consumers arrive before all the consumers that have already arrived are completed.
+
+Hold the elevator door! Don't leave without me!
+
+------------------------------------------------------------------------
+
+(7) The lab handout says that for part 3, the building should handle requests efficiently so that at most one elevator goes to pick up a set of passengers. Does this mean we can assume that there always be only one elevator on a floor going in a given direction, i.e. E <= 2F?
+
+Yes.  As a general rule you are free to make reasonable assumptions. You should just throw a note into the README. From where you sit it may be difficult to know what we will consider to be "reasonable", but I can help you calibrate: this assumption is clearly reasonable. In other cases if an assumption will save you work and is not prohibited by the specification, then we will accept it.
+
+------------------------------------------------------------------------
+
+(8) I used EventBarrier in my Elevator, and my program just stops.   Why doesn't Java work?  I'm sick of this!
+
+It might be that you are using a lock in your elevator object, and then call eBarrier.arrive() from a synchronized block in your elevator.  That would cause you to block in arrive() without releasing the lock on your elevator.  This is a classic deadlock error and many students encounter it.
+
+------------------------------------------------------------------------
+
+(9) Can we use classes in java.util.concurrent.*?
+
+We want you to implement all the synchronization logic using native synchronization, i.e., monitors (mutexes and condition variables).  
+
+However, we would not take off many points if you choose to use concurrent classes.
+
+In general, you need to be careful when using Java collections. Using iterator is always recommend to perform modifications.
