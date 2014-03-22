@@ -26,8 +26,8 @@ public class EventBarrier extends AbstractEventBarrier{
 
 	@Override
 	public synchronized void raise() {
-		if (count == 0) {
-			signal = false;
+		if (count != 0) {
+			signal = true;
 		}
 		while (signal) {
 			notifyAll();
@@ -37,6 +37,7 @@ public class EventBarrier extends AbstractEventBarrier{
 				e.printStackTrace();
 			}
 		}
+		signal = false;
 	}
 
 	@Override

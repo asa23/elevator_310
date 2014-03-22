@@ -20,7 +20,7 @@ public class Elevator extends AbstractElevator{
 
 	@Override
 	public void VisitFloor(int floor) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
