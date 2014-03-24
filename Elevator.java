@@ -6,6 +6,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 	private Hotel myHotel;
 	private HashMap<Integer, Integer> curOccupants;
 	private int numRequests;
+	private int occupantsCount;
 	private boolean goingUp;
 
 	public Elevator(int numFloors, int elevatorId, int maxOccupancyThreshold, Hotel hotel) {
@@ -13,6 +14,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 		this.myHotel = hotel;
 		this.curOccupants = new HashMap<Integer, Integer>();
 		numRequests = 0;
+		occupantsCount = 0;
 		this.goingUp = true;
 	}
 
@@ -36,7 +38,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public void VisitFloor(int floor) {
 		this.curEventBarrier = this.myHotel.getFloor(floor);
 		if (curEventBarrier.waiters() > 0)
-			System.out.printf("On floor %d, %d riders waiting\n", floor, curEventBarrier.waiters());
+			//System.out.printf("On floor %d, %d riders waiting\n", floor, curEventBarrier.waiters());
 		if (this.curEventBarrier.waiters() > 0){
 			System.out.printf("E%d on F%d opens\n", this.elevatorId, floor);
 			OpenDoors();
@@ -48,9 +50,10 @@ public class Elevator extends AbstractElevator implements Runnable{
 	}
 
 	@Override
-	public boolean Enter() {
+	public synchronized boolean Enter() {
 		// TODO Auto-generated method stub
 		this.curEventBarrier.complete();
+		occupantsCount+=1;
 		return true;
 	}
 
@@ -58,6 +61,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public void Exit() {
 		// TODO Auto-generated method stub
 		this.curEventBarrier.complete();
+		occupantsCount-=1;
 		decrementRequests();
 	}
 
@@ -79,21 +83,33 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public synchronized void decrementRequests(){
 		numRequests -= 1;
 	}
+	
+	public synchronized void setGoingUp(){
+		this.goingUp = true;
+	}
+	
+	public synchronized void setGoingDown(){
+		this.goingUp = false;
+	}
+	
+	public synchronized boolean elevatorDirectionIsUp(){
+		return this.goingUp;
+	}
 
 	public void run(){
 		//TODO: add in thread logic here
 
 		while(true){
 			if (getNumRequests() > 0){
-				for (int i = 1; i < numFloors+1; i++) {
-					this.goingUp = true;
+				for (int i = 1; i < numFloors; i++) {
+					setGoingUp();
 					VisitFloor(i);
-					System.out.println(i);
+					//System.out.println(i);
 				}
-				for (int i = numFloors-1; i > 1; i--) {
-					this.goingUp = false;
+				for (int i = numFloors; i > 1; i--) {
+					setGoingDown();
 					VisitFloor(i);
-					System.out.println(i);
+					//System.out.println(i);
 				}
 			}
 		}

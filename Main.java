@@ -19,7 +19,7 @@ public class Main{
 	}
 
 	public void go() throws FileNotFoundException {
-		Scanner in = new Scanner(new BufferedReader(new FileReader("test.txt")));
+		Scanner in = new Scanner(new BufferedReader(new FileReader("/Users/bullinsb/Desktop/Java_stuff/lab3/src/test.txt")));
 		FloorCount = in.nextInt();
 		ElevatorCount = in.nextInt();
 		RiderCount = in.nextInt();
@@ -36,8 +36,14 @@ public class Main{
 			RiderSet.put(i+1, newRider);
 		}
 		
+		
+
+		
 		Thread elevatorThread = new Thread(testHotel.getElevator(1));
 		elevatorThread.start();
+		
+		
+		
 
 		while (in.hasNext()) {
 			
@@ -54,5 +60,6 @@ public class Main{
 			
 			
 		}
+		
 	}
 }

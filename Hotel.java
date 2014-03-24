@@ -29,6 +29,7 @@ public class Hotel extends AbstractBuilding{
 	public Elevator CallDown(int fromFloor){
 		Elevator curElevator = getElevator(1); // more logic here later, for multiple elevators
 		EventBarrier fromFloorGuard = getFloor(fromFloor);
+		curElevator.incrementRequests();
 		fromFloorGuard.arrive();
 		return curElevator;
 	}
