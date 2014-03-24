@@ -21,6 +21,10 @@ public class Elevator extends AbstractElevator implements Runnable{
 		// TODO Auto-generated method stub
 		this.curEventBarrier.raise();
 	}
+	
+	private synchronized int getNumRequests(){
+		return numRequests;
+	}
 
 	@Override
 	public void ClosedDoors() {
@@ -80,7 +84,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 		//TODO: add in thread logic here
 
 		while(true){
-			if (numRequests > 0){
+			if (getNumRequests() > 0){
 				for (int i = 1; i < numFloors+1; i++) {
 					this.goingUp = true;
 					VisitFloor(i);
