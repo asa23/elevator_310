@@ -25,17 +25,6 @@ public class EventBarrier extends AbstractEventBarrier{
 		}
 	}
 
-	public synchronized void waitForRiders() {
-		while (!signal) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		signal = true;
-	}
-
 	@Override
 	public synchronized void raise() {
 		if (count != 0) {

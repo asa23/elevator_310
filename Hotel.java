@@ -2,16 +2,22 @@ import java.util.*;
 
 public class Hotel extends AbstractBuilding{
 
-	private HashMap<Integer, EventBarrier> FloorGuards;
+	private HashMap<Integer, EventBarrier> OnElevatorFloorGuards;
+	private HashMap<Integer, EventBarrier> OffElevatorFloorGuards;
 	private HashMap<Integer, Elevator> ElevatorSet;
 	
 	public Hotel(int numFloors, int numElevators){
 		super(numFloors, numElevators);
 
 		// initialize FloorGuards map
-		FloorGuards = new HashMap<Integer, EventBarrier>();
+		OnElevatorFloorGuards = new HashMap<Integer, EventBarrier>();
 		for (int i = 0; i < numFloors; i++) {
-			FloorGuards.put(i+1, new EventBarrier());
+			OnElevatorFloorGuards.put(i+1, new EventBarrier());
+		}
+		
+		OffElevatorFloorGuards = new HashMap<Integer, EventBarrier>();
+		for (int i = 0; i < numFloors; i++) {
+			OffElevatorFloorGuards.put(i+1, new EventBarrier());
 		}
 
 	}
@@ -19,7 +25,7 @@ public class Hotel extends AbstractBuilding{
 	@Override
 	public Elevator CallUp(int fromFloor){
 		Elevator curElevator = getElevator(1); // more logic here later, for multiple elevators
-		EventBarrier fromFloorGuard = getFloor(fromFloor);
+		EventBarrier fromFloorGuard = getOffElevatorFloorGuard(fromFloor);
 		curElevator.incrementRequests();
 		fromFloorGuard.arrive();
 		return curElevator;
@@ -28,7 +34,7 @@ public class Hotel extends AbstractBuilding{
 	@Override
 	public Elevator CallDown(int fromFloor){
 		Elevator curElevator = getElevator(1); // more logic here later, for multiple elevators
-		EventBarrier fromFloorGuard = getFloor(fromFloor);
+		EventBarrier fromFloorGuard = getOffElevatorFloorGuard(fromFloor);
 		curElevator.incrementRequests();
 		fromFloorGuard.arrive();
 		return curElevator;
@@ -46,8 +52,12 @@ public class Hotel extends AbstractBuilding{
 		return ElevatorSet.get(elevatorID);
 	}
 	
-	public EventBarrier getFloor(int floor){
-		return FloorGuards.get(floor);
+	public EventBarrier getOnElevatorFloorGuard(int floor){
+		return OnElevatorFloorGuards.get(floor);
+	}
+	
+	public EventBarrier getOffElevatorFloorGuard(int floor){
+		return OffElevatorFloorGuards.get(floor);
 	}
 
 

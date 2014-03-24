@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Rider implements Runnable {
     private Hotel myHotel;
     private Elevator myElevator;
@@ -5,11 +7,13 @@ public class Rider implements Runnable {
     private int destFloor;
     private int riderId;
     private boolean onElevator;
+    private Queue<ArrayList<Integer>> requestQueue;
 
     public Rider(Hotel hotel, int id) {
         this.myHotel = hotel;
         this.riderId = id;
         this.onElevator = false;
+        requestQueue = new LinkedList<ArrayList<Integer>>();
     }
 
     public void setFromFloor(int myFromFloor){
@@ -27,9 +31,18 @@ public class Rider implements Runnable {
     public synchronized void setOnElevator(boolean riderOnElevator){
         this.onElevator = riderOnElevator;
     }
+    
+    public synchronized void addRequest(ArrayList<Integer> request){
+        requestQueue.add(request);
+    }
+    
+    public synchronized ArrayList<Integer> popRequest() {
+        return requestQueue.poll();
+    }
 
     public void run() {
-        // TODO: add in thread logic here       
+        // TODO: add in thread logic here
+
         while (!this.onElevator){
             if (destFloor > fromFloor){
                 System.out.printf("R%d pushes U%d\n", riderId, fromFloor);
@@ -43,7 +56,7 @@ public class Rider implements Runnable {
                 }
                 else {
                     myElevator.decrementRequests();
-                    EventBarrier fromFloorGuard = myHotel.getFloor(fromFloor);
+                    EventBarrier fromFloorGuard = myHotel.getOffElevatorFloorGuard(fromFloor);
                     fromFloorGuard.complete();
                 }
             }
@@ -59,7 +72,7 @@ public class Rider implements Runnable {
                 }
                 else {
                     myElevator.decrementRequests();
-                    EventBarrier fromFloorGuard = myHotel.getFloor(fromFloor);
+                    EventBarrier fromFloorGuard = myHotel.getOffElevatorFloorGuard(fromFloor);
                     fromFloorGuard.complete();
                 }
             }       
@@ -68,4 +81,5 @@ public class Rider implements Runnable {
         System.out.printf("R%d exits E%d on F%d\n", riderId, myElevator.elevatorId, destFloor);
         myElevator.Exit();
     }
+
 }
