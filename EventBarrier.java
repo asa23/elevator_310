@@ -17,11 +17,23 @@ public class EventBarrier extends AbstractEventBarrier{
 		}
 		while (!signal) {
 			try {
+				System.out.println("waiting after arriving");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public synchronized void waitForRiders() {
+		while (!signal) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		signal = true;
 	}
 
 	@Override

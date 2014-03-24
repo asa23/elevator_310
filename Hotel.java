@@ -7,23 +7,41 @@ public class Hotel extends AbstractBuilding{
 	
 	public Hotel(int numFloors, int numElevators){
 		super(numFloors, numElevators);
+
+		// initialize FloorGuards map
+		FloorGuards = new HashMap<Integer, EventBarrier>();
+		for (int i = 0; i < numFloors; i++) {
+			FloorGuards.put(i+1, new EventBarrier());
+		}
+
 	}
 
 	@Override
-	public AbstractElevator CallUp(int fromFloor){
+	public Elevator CallUp(int fromFloor){
 		Elevator curElevator = getElevator(1); // more logic here later, for multiple elevators
 		EventBarrier fromFloorGuard = getFloor(fromFloor);
+		curElevator.incrementRequests();
 		fromFloorGuard.arrive();
+		return curElevator;
 	}
 
 	@Override
-	public AbstractElevator CallDown(int fromFloor){
+	public Elevator CallDown(int fromFloor){
 		Elevator curElevator = getElevator(1); // more logic here later, for multiple elevators
 		EventBarrier fromFloorGuard = getFloor(fromFloor);
 		fromFloorGuard.arrive();
+		return curElevator;
 	}
 
-	public AbstractElevator getElevator(int elevatorID){
+	public void setElevators(int OccupancyThreshold, Hotel thisHotel) {
+		// initialize ElevatorSet map
+		ElevatorSet = new HashMap<Integer, Elevator>();
+		for (int i = 0; i < numElevators; i++) {
+			ElevatorSet.put(i+1, new Elevator(this.numFloors, i+1, OccupancyThreshold, thisHotel));
+		}
+	}
+
+	public Elevator getElevator(int elevatorID){
 		return ElevatorSet.get(elevatorID);
 	}
 	
