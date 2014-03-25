@@ -6,17 +6,17 @@
  * Team Info & Time spent
  *************************/
 
-	Name1: Full Name 	// Edit this accordingly
-	NetId1: fn	 	// Edit
-	Time spent: 10 hours 	// Edit 
+	Name1: Rachel Harris
+	NetId1: rah35
+	Time spent: 15 hours
 
-	Name2: Full Name 	// Edit this accordingly
-	NetId2: fn	 	// Edit
-	Time spent: 10 hours 	// Edit 
+	Name2: Brian Bullins
+	NetId2: bab41
+	Time spent: 15 hours  
 
-	Name3: Full Name 	// Edit this accordingly
-	NetId3: fn	 	// Edit
-	Time spent: 10 hours 	// Edit 
+	Name3: Ariba Aboobakar 
+	NetId3: asa23	
+	Time spent: 15 hours
 
 /******************
  * Files to submit
@@ -51,20 +51,32 @@
  * In case of lab is limited in some functionality, you should provide the
  * details to maximize your partial credit.  
  * */
+ 
+ Multiple elevators are handled in the Hotel class, where the hotel assigns an 
+ elevator to a rider based on a distance function.  The function calculates the 
+ distance of all the elevators in the building from the floor of the rider requesting 
+ an elevator, taking into account the current direction (up or down) of the 
+ elevator's path and the direction that the rider wants to go.  We experimented with 
+ having a cache of previous elevator-to-floor assignments, but the threads didn't 
+ necessarily release the assignments in a predictable or timely fashion, and there 
+ should not be cases where multiple riders are assigned to different elevators without 
+ this functionality, anyway.  (The closest elevator to a rider should also be closest 
+ to the riders near that first rider, so it should receive assignments for the nearby
+ floors as well.)  This functionality is centralized in the pickAnElevator method in 
+ the Hotel class.
 
 /************************
  * Feedback on the lab
  ************************/
 
-/*
- * Any comments/questions/suggestions/experiences that you would help us to
- * improve the lab.
- * */
+Lab was challenging but a good demonstration of threads, scheduling and locks.
 
 /************************
  * References
  ************************/
 
-/*
- * List of collaborators involved including any online references/citations.
- * */
+Java concurrency tutorials:
+http://docs.oracle.com/javase/tutorial/essential/concurrency/guardmeth.html
+http://www.journaldev.com/1037/java-thread-wait-notify-and-notifyall-example
+
+We also recieved help from Nisarg Raval

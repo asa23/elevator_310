@@ -5,6 +5,7 @@ public class Hotel extends AbstractBuilding{
 	private HashMap<Integer, EventBarrier> OnElevatorFloorGuards;
 	private HashMap<Integer, EventBarrier> OffElevatorFloorGuards;
 	private HashMap<Integer, Elevator> ElevatorSet;
+//	private HashMap<Integer, Elevator> ElevatorAssignments;
 	
 	public Hotel(int numFloors, int numElevators){
 		super(numFloors, numElevators);
@@ -19,6 +20,7 @@ public class Hotel extends AbstractBuilding{
 		for (int i = 0; i < numFloors; i++) {
 			OffElevatorFloorGuards.put(i+1, new EventBarrier());
 		}
+//		ElevatorAssignments = new HashMap<Integer, Elevator>();
 
 	}
 
@@ -60,10 +62,19 @@ public class Hotel extends AbstractBuilding{
 		return OffElevatorFloorGuards.get(floor);
 	}
 	
+//	public synchronized void releaseAssignments(int floor) {
+//		if (ElevatorAssignments.containsKey(floor)){
+//			ElevatorAssignments.remove(floor);
+//		}
+//	}
+	
 	
 	private synchronized Elevator pickAnElevator(int fromFloor, boolean goingUp) {
-		Elevator chosen;
-		ArrayList<Elevator> chosenElevators = new ArrayList<Elevator>();
+//		if (ElevatorAssignments.containsKey(fromFloor)){
+//			System.out.println("Floor " + fromFloor + " was already assigned an Elevator");
+//			return ElevatorAssignments.get(fromFloor);
+//		}
+		Elevator chosen = ElevatorSet.get(1);
 		int closest = numFloors * 3;
 		for (Elevator curElevator: ElevatorSet.values()){
 			int distance = 0;
@@ -79,20 +90,13 @@ public class Hotel extends AbstractBuilding{
 				}
 			}
 			System.out.println("Elevator # is: " + curElevator.elevatorId + "\tElevator distance is: " + distance);
-			if (distance <= closest){
-				chosenElevators.add(curElevator);
+			if (distance < closest){
+				chosen = curElevator;
 				closest = distance;
 			}
 		}
-		if (chosenElevators.size() == 1) {
-			chosen = chosenElevators.get(0);
-		}
-		else {
-			Random generator = new Random();
-			int x = generator.nextInt(chosenElevators.size() - 1);
-			chosen = chosenElevators.get(x);
-		}
 		System.out.println("ChosenElevator number: " + chosen.elevatorId);
+//		ElevatorAssignments.put(fromFloor, chosen);
 		return chosen;
 	}
 

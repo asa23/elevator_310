@@ -63,6 +63,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 	@Override
 	public synchronized boolean Enter() {
 		// TODO Auto-generated method stub
+//		myHotel.releaseAssignments(curFloor);
 		this.curOffElevatorEventBarrier.complete();
 		occupantsCount+=1;
 		return true;
