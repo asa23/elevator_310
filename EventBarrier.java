@@ -17,7 +17,6 @@ public class EventBarrier extends AbstractEventBarrier{
 		}
 		while (!signal) {
 			try {
-				//System.out.println("waiting after arriving");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();

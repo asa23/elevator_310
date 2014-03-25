@@ -38,9 +38,10 @@ public class Main{
 		
 		
 
-		
-		Thread elevatorThread = new Thread(testHotel.getElevator(1));
-		elevatorThread.start();
+		for (int i = 0; i < ElevatorCount; i++){
+			Thread elevatorThread = new Thread(testHotel.getElevator(i+1));
+			elevatorThread.start();
+		}
 		
 		
 		
@@ -57,6 +58,13 @@ public class Main{
 
 			Thread t1 = new Thread(curRider); 
 			t1.start();
+			
+			try {
+				Thread.sleep(150);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			
 		}

@@ -9,6 +9,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 	private int numRequests;
 	private int occupantsCount;
 	private boolean goingUp;
+	private int curFloor;
 
 	public Elevator(int numFloors, int elevatorId, int maxOccupancyThreshold, Hotel hotel) {
 		super(numFloors, elevatorId, maxOccupancyThreshold);
@@ -105,6 +106,14 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public synchronized boolean elevatorDirectionIsUp(){
 		return this.goingUp;
 	}
+	
+	public synchronized void setFloor(int floor) {
+		this.curFloor = floor;
+	}
+	
+	public synchronized int getFloor() {
+		return this.curFloor;
+	}
 
 	public void run(){
 		//TODO: add in thread logic here
@@ -112,13 +121,27 @@ public class Elevator extends AbstractElevator implements Runnable{
 		while(true){
 			if (getNumRequests() > 0){
 				for (int i = 1; i < numFloors; i++) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					setGoingUp();
 					VisitFloor(i);
+					setFloor(i);
 					//System.out.println(i);
 				}
 				for (int i = numFloors; i > 1; i--) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					setGoingDown();
 					VisitFloor(i);
+					setFloor(i);
 					//System.out.println(i);
 				}
 			}
