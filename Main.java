@@ -43,30 +43,27 @@ public class Main{
 			elevatorThread.start();
 		}
 		
-		
-		
-
 		while (in.hasNext()) {
 			
 			int curRiderIndex = in.nextInt();
 			int startFloor = in.nextInt();
 			int destFloor = in.nextInt();
 
-			Rider curRider = RiderSet.get(curRiderIndex);
-			curRider.setFromFloor(startFloor);
-			curRider.setDestFloor(destFloor);
+			ArrayList<Integer> request = new ArrayList<Integer>();
+			request.add(startFloor);
+			request.add(destFloor);
 
-			Thread t1 = new Thread(curRider); 
-			t1.start();
+			Rider curRider = RiderSet.get(curRiderIndex);
+			curRider.addRequest(request);
 			
-			try {
-				Thread.sleep(150);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		}
+
+		for (int i = 0; i < RiderCount; i++){
+			Rider curRider = RiderSet.get(i+1);
+			Thread riderThread = new Thread(curRider);
+			if (!(curRider.getRequestQueue().isEmpty())){ 
+				riderThread.start();
 			}
-			
-			
 		}
 		
 	}

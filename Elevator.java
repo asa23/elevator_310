@@ -4,6 +4,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 
 	private EventBarrier curOnElevatorEventBarrier;
 	private EventBarrier curOffElevatorEventBarrier;
+	private EventBarrier curIncompleteRiderFloorGuard;
 	private Hotel myHotel;
 	private HashMap<Integer, Integer> curOccupants;
 	private int numRequests;
@@ -33,6 +34,10 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public void OpenOffElevatorDoors() {
 		this.curOffElevatorEventBarrier.raise();
 	}
+
+	public void OpenIncompleteRiderFloorGuard() {
+		this.curIncompleteRiderFloorGuard.raise();
+	}
 	
 	private synchronized int getNumRequests(){
 		return numRequests;
@@ -48,11 +53,13 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public void VisitFloor(int floor) {
 		this.curOnElevatorEventBarrier = this.myHotel.getOnElevatorFloorGuard(floor);
 		this.curOffElevatorEventBarrier = this.myHotel.getOffElevatorFloorGuard(floor);
+		this.curIncompleteRiderFloorGuard = this.myHotel.getIncompleteRiderFloorGuard(floor);
 
 		if (this.curOnElevatorEventBarrier.waiters() > 0 || this.curOffElevatorEventBarrier.waiters() > 0){
 			System.out.printf("E%d on F%d opens\n", this.elevatorId, floor);
 			OpenOnElevatorDoors();
 			OpenOffElevatorDoors();
+			OpenIncompleteRiderFloorGuard();
 
 			System.out.printf("E%d on F%d closes\n", this.elevatorId, floor);
 			ClosedDoors();
