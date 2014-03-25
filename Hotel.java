@@ -4,6 +4,7 @@ public class Hotel extends AbstractBuilding{
 
 	private HashMap<Integer, EventBarrier> OnElevatorFloorGuards;
 	private HashMap<Integer, EventBarrier> OffElevatorFloorGuards;
+	private HashMap<Integer, EventBarrier> IncompleteRiderFloorGuards;
 	private HashMap<Integer, Elevator> ElevatorSet;
 //	private HashMap<Integer, Elevator> ElevatorAssignments;
 	
@@ -21,6 +22,11 @@ public class Hotel extends AbstractBuilding{
 			OffElevatorFloorGuards.put(i+1, new EventBarrier());
 		}
 //		ElevatorAssignments = new HashMap<Integer, Elevator>();
+
+		IncompleteRiderFloorGuards = new HashMap<Integer, EventBarrier>();
+		for (int i = 0; i < numFloors; i++) {
+			IncompleteRiderFloorGuards.put(i+1, new EventBarrier());
+		}
 
 	}
 
@@ -68,6 +74,10 @@ public class Hotel extends AbstractBuilding{
 //		}
 //	}
 	
+
+	public EventBarrier getIncompleteRiderFloorGuard(int floor){
+		return IncompleteRiderFloorGuards.get(floor);
+	}
 	
 	private synchronized Elevator pickAnElevator(int fromFloor, boolean goingUp) {
 //		if (ElevatorAssignments.containsKey(fromFloor)){

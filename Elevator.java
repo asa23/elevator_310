@@ -4,6 +4,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 
 	private EventBarrier curOnElevatorEventBarrier;
 	private EventBarrier curOffElevatorEventBarrier;
+	private EventBarrier curIncompleteRiderFloorGuard;
 	private Hotel myHotel;
 	private HashMap<Integer, Integer> curOccupants;
 	private int numRequests;
@@ -18,6 +19,7 @@ public class Elevator extends AbstractElevator implements Runnable{
 		numRequests = 0;
 		occupantsCount = 0;
 		this.goingUp = true;
+		curFloor = 1;
 	}
 
 	@Override
@@ -32,6 +34,10 @@ public class Elevator extends AbstractElevator implements Runnable{
 	
 	public void OpenOffElevatorDoors() {
 		this.curOffElevatorEventBarrier.raise();
+	}
+
+	public void OpenIncompleteRiderFloorGuard() {
+		this.curIncompleteRiderFloorGuard.raise();
 	}
 	
 	private synchronized int getNumRequests(){
@@ -48,11 +54,13 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public void VisitFloor(int floor) {
 		this.curOnElevatorEventBarrier = this.myHotel.getOnElevatorFloorGuard(floor);
 		this.curOffElevatorEventBarrier = this.myHotel.getOffElevatorFloorGuard(floor);
+		this.curIncompleteRiderFloorGuard = this.myHotel.getIncompleteRiderFloorGuard(floor);
 
 		if (this.curOnElevatorEventBarrier.waiters() > 0 || this.curOffElevatorEventBarrier.waiters() > 0){
 			System.out.printf("E%d on F%d opens\n", this.elevatorId, floor);
 			OpenOnElevatorDoors();
 			OpenOffElevatorDoors();
+			OpenIncompleteRiderFloorGuard();
 
 			System.out.printf("E%d on F%d closes\n", this.elevatorId, floor);
 			ClosedDoors();
@@ -61,9 +69,10 @@ public class Elevator extends AbstractElevator implements Runnable{
 	}
 
 	@Override
-	public synchronized boolean Enter() {
+	public synchronized boolean Enter(int riderID) {
 		// TODO Auto-generated method stub
 //		myHotel.releaseAssignments(curFloor);
+        System.out.printf("R%d enters E%d on F%d\n", riderID, elevatorId, getFloor());
 		this.curOffElevatorEventBarrier.complete();
 		occupantsCount+=1;
 		return true;
@@ -115,34 +124,38 @@ public class Elevator extends AbstractElevator implements Runnable{
 	public synchronized int getFloor() {
 		return this.curFloor;
 	}
+	
+	public synchronized int getOccupantsCount() {
+		return this.occupantsCount;
+	}
 
 	public void run(){
 		//TODO: add in thread logic here
 
 		while(true){
 			if (getNumRequests() > 0){
-				for (int i = 1; i < numFloors; i++) {
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				for (int i = 1; i <= numFloors; i++) {
+//					try {
+//						Thread.sleep(50);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					setGoingUp();
-					VisitFloor(i);
 					setFloor(i);
+					VisitFloor(i);
 					//System.out.println(i);
 				}
-				for (int i = numFloors; i > 1; i--) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				for (int i = numFloors; i >= 1; i--) {
+//					try {
+//						Thread.sleep(100);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					setGoingDown();
-					VisitFloor(i);
 					setFloor(i);
+					VisitFloor(i);
 					//System.out.println(i);
 				}
 			}
